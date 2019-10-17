@@ -23,11 +23,19 @@ utils.sleep(2000).then(() => {
     player_ranks = utils.calculRank(players)
 
     matchPlayed.forEach(match => {
-        utils.refreshMatch(match)        
+        utils.refreshMatch(match)
         player_ranks = utils.calculRank(players)
     });
-    console.warn(player_ranks);
     //utils.refreshDB(players)
     tools.writeRankIntoSpreadSheet(player_ranks)
+    player_rank_top_cleaned = player_ranks.slice(0, 5).map(x => {
+        return {
+            nom: x.nom,
+            points: x.points,
+            rank: x.rank
+        }
+    })
+    console.warn("Le classement à été mis à jour");
+    console.warn("Top 5: ", player_rank_top_cleaned);
+    utils.getStats(matchPlayed)
 })
-

@@ -3,6 +3,8 @@ const readline = require('readline');
 const {
   google
 } = require('googleapis');
+utils = require('./utils.js');
+
 
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
@@ -164,9 +166,10 @@ function readMatchPlayedSpreadSheet(auth, ...args) {
 
 function writeRankIntoSpreadSheet(auth, ...args) {
   values = player_ranks.map(x => {
-    return [x.rank, x.nom, x.points, x.matchs.length >= 15 ? 15 : x.matchs.length]
+    matchs_to_keep = utils.suppressionMatchMemeJoueur(x.matchs)
+    return [x.rank, x.nom, x.points, matchs_to_keep.length >= 20 ? 20 : matchs_to_keep.length]
   })
-  values.unshift(["Rang", "Joueur", "Points", "Match Jouées (15 dernier max)"])
+  values.unshift(["Rang", "Joueur", "Points", "Match Jouées (20 dernier max, 3 par adversaire)"])
 
   resources = {
     'values': values
