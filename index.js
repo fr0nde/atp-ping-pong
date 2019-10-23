@@ -26,7 +26,7 @@ module.exports = {
   readMatchPlayedSpreadSheet: () => {
     fs.readFile('credentials.json', (err, content) => {
       if (err) return console.log('Error loading client secret file:', err);
-        authorize(JSON.parse(content), readMatchPlayedSpreadSheet);
+      authorize(JSON.parse(content), readMatchPlayedSpreadSheet);
     });
   },
 
@@ -36,7 +36,16 @@ module.exports = {
       if (err) return console.log('Error loading client secret file:', err);
       authorize(JSON.parse(content), clearMatchPlayedSpreadSheet);
     });
-  }
+  },
+
+  writeStatsIntoSpreadSheet: () => {
+    // Load client secrets from a local file.
+    fs.readFile('credentials.json', (err, content) => {
+      if (err) return console.log('Error loading client secret file:', err);
+      // Authorize a client with credentials, then call the Google Sheets API.
+      authorize(JSON.parse(content), writeStatsIntoSpreadSheet);
+    });
+  },
 }
 
 
@@ -183,6 +192,35 @@ function writeRankIntoSpreadSheet(auth, ...args) {
     .update({
       spreadsheetId: '1dtQu4lwiFIvgDLtpXjTipoJjkUMwNWbS2UE876jHFjI',
       range: 'Classement',
+      valueInputOption: valueInputOption,
+      resource: resources
+    }, (err, result) => {
+      if (err) {
+        // Handle error
+        console.log(err);
+      } else {
+        //console.log('%d cells updated.', result);
+      }
+    });
+
+}
+
+
+function writeStatsIntoSpreadSheet(auth, ...args) {
+  values = utils.getPlayerStats(matchPlayed)
+  values.unshift(["Joueur", "Total Victoires", "Total Défaites", "Total Matchs","3-0 Infligés", "3-0 Subits", "Ratio"])
+  resources = {
+    'values': values
+  }
+  valueInputOption = "RAW"
+  const sheets = google.sheets({
+    version: 'v4',
+    auth
+  });
+  sheets.spreadsheets.values
+    .update({
+      spreadsheetId: '1dtQu4lwiFIvgDLtpXjTipoJjkUMwNWbS2UE876jHFjI',
+      range: 'DS - Stats Joueurs',
       valueInputOption: valueInputOption,
       resource: resources
     }, (err, result) => {

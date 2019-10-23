@@ -180,5 +180,50 @@ module.exports = {
         console.warn("Plus de défaite", best_looser);
         console.warn("Plus de 3-0", best_bourreau);
         console.warn("Plus de 0-3", best_victime);
+    },
+
+    getPlayerStats: (matchPlayed) =>{
+        player = {}
+
+        matchPlayed.forEach(match => {
+            j1 = match['joueur_1']
+            j2 = match['joueur_2']
+            s1 = match['score_joueur_1']
+            s2 = match['score_joueur_2']
+
+            if (!player[j1])
+                player[j1] = {"victoire": 0, "defaite": 0, "matchs total": 0, "nbr 3-0": 0, 'nbr 0-3': 0}
+            if (!player[j2])
+                player[j2] = {"victoire": 0, "defaite": 0, "matchs total": 0, "nbr 3-0": 0, 'nbr 0-3': 0}
+            
+            player[j1]['matchs total'] += 1
+            player[j2]['matchs total'] += 1
+            if (s1 == "2" || s1 == "3"){
+                player[j1]["victoire"] = (player[j1]["victoire"] ? player[j1]["victoire"] : 0) + 1
+                player[j2]["defaite"] = (player[j2]["defaite"] ? player[j2]["defaite"] : 0) + 1
+
+            }
+            else {
+                player[j1]["defaite"] = (player[j1]["defaite"] ? player[j1]["defaite"] : 0) + 1
+                player[j2]["victoire"] = (player[j2]["victoire"] ? player[j2]["victoire"] : 0) + 1
+            }
+            if (s1 == "3"){
+                player[j1]["nbr 3-0"] = (player[j1]["nbr 3-0"] ? player[j1]["nbr 3-0"] : 0) + 1
+                player[j2]["nbr 0-3"] = (player[j2]["nbr 0-3"] ? player[j2]["nbr 0-3"] : 0) + 1
+            }
+            if (s2 == "3"){
+                player[j1]["nbr 0-3"] = (player[j1]["nbr 0-3"] ? player[j1]["nbr 0-3"] : 0) + 1
+                player[j2]["nbr 3-0"] = (player[j2]["nbr 3-0"] ? player[j2]["nbr 3-0"] : 0) + 1
+            }
+        });
+        Object.keys(player).forEach(key => {
+            p = player[key]
+            p['ratio'] = Math.round((p['victoire'] / p['matchs total']) * 100)
+        });
+        noms = Object.keys(player)
+        return Object.values(player).map((x, index) => {
+            res = [noms[index]]
+            return res.concat(Object.values(x))
+        })
     }
 }

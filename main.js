@@ -37,5 +37,6 @@ utils.sleep(2000).then(() => {
     })
     console.warn("Le classement à été mis à jour");
     console.warn("Top 5: ", player_rank_top_cleaned);
-    utils.getStats(matchPlayed)
+    
+    tools.writeStatsIntoSpreadSheet()
 })
